@@ -1,0 +1,145 @@
+1- CM VM:
+    a. Please add the below commands to sudoo privilges for the users/group on IDM and  will access the VM:
+         dnf , or yum , or rpm , semanage fcontext , semanage port , chcon ,vgs , lvs , pvs , pvdisplay , lvdisplay , vgdisplay ,chmod , chown , cat , sed , awk , grep, vim , setfacl, getfacl , iptables , systemctl , journalctl , firewalld-cmd , rm , cp , mv , podman , podman-compose , pip3 , pip3.9 , pip3.8 , curl ,openssl, df , top , elastic-agent , apm-server , /usr/share/logstash/bin/logstash , jq
+
+    b. Needed repos to be activated on VM to install podman runtime engine:
+		        Install podman on RHEL:
+				https://access.redhat.com/solutions/3650231
+		     a. Red Hat Enterprise Linux 8: 
+		            sudo subscription-manager repos --list-enabled
+					sudo subscription-manager repos --enable rhel-8-baseos
+					sudo subscription-manager repos --enable rhel-8-appstream
+
+		         # sudo yum module install container-tools
+		     b. Red Hat Enterprise Linux 9:
+		        sudo subscription-manager repos --list-enabled
+				sudo subscription-manager repos --enable rhel-9-baseos
+				sudo subscription-manager repos --enable rhel-9-appstream
+
+		         # sudo dnf install container-tools
+
+	c. Add write permission to the user on this file : 
+			/etc/containers/registries.conf
+			/etc/profile
+			/etc/containers/storage.conf
+
+	d. Allow the below docker image registries to pull the needed docker images:
+	    podman pull docker.elastic.co/elasticsearch/elasticsearch:8.15.4
+		podman pull docker.elastic.co/kibana/kibana:8.15.4
+	    podman pull docker.elastic.co/package-registry/distribution:8.15.4
+		podman pull docker pull docker.elastic.co/beats/elastic-agent-complete:8.15.4
+		podman pull docker pull docker.elastic.co/beats/elastic-agent-complete:8.11.4
+    e. create a service user with no login shell with id 1000 and grant it write permission to /mnt/data/
+    e. Grant the group/users created on IDM and will access VM 775 permission of /mnt/data
+
+    f. Activate epel repos to the VM
+          sudo dnf install -y epel-release
+
+    g. Allow the below links for pip3 install podman-compose
+         https://github.com/containers/podman-compose/
+         https://files.pythonhosted.org/packages/6a/3e/b68c118422ec867fa7ab88444e1274aa40681c606d59ac27de5a5588f082/python_dotenv-1.0.1-py3-none-any.whl
+         https://files.pythonhosted.org/packages/84/41/ea0faa54a9a115245256fbd6e70894050e2b79e7881814861b2f5d74ba1a/podman_compose-1.2.0-py2.py3-none-any.whl
+         https://files.pythonhosted.org/packages/bd/67/0f8cf5ef346a22ce73dfdd0e60cf81342329b71a7fc118128929f0c07b62/podman_compose-1.2.0.tar.gz
+         https://github.com/containers/podman-compose/archive/main.tar.gz
+
+    h. create a service user  called "elastic-agent-user" to run fleet server and do the below:
+    	add the elastic-agent-user user to the adm group
+    	Giving read permission to the elastic-agent group for the /var/log/system.log
+    	Give read permission to the elastic-agent group for the /var/log/system.log
+
+    i. Allow the below links to download the artifacts:
+                curl -O https://artifacts.elastic.co/downloads/logstash/logstash-8.15.4-x86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/logstash/logstash-8.15.4-x86_64.rpm.sha512	
+				curl -O https://artifacts.elastic.co/downloads/logstash/logstash-8.11.4-x86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/logstash/logstash-8.11.4-x86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/apm-server/apm-server-8.15.4-linux-x86_64.tar.gz
+				curl -O https://artifacts.elastic.co/downloads/apm-server/apm-server-8.15.4-linux-x86_64.tar.gz.sha512
+				curl -O https://artifacts.elastic.co/downloads/apm-server/apm-server-8.15.4-linux-x86_64.tar.gz.asc
+				curl -O https://artifacts.elastic.co/downloads/apm-server/apm-server-8.15.4-x86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/apm-server/apm-server-8.15.4-x86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/apm-server/apm-server-8.11.4-x86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/apm-server/apm-server-8.11.4-x86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/beats/auditbeat/auditbeat-8.15.4-linux-x86_64.tar.gz
+				curl -O https://artifacts.elastic.co/downloads/beats/auditbeat/auditbeat-8.15.4-linux-x86_64.tar.gz.sha512
+				curl -O https://artifacts.elastic.co/downloads/beats/auditbeat/auditbeat-8.15.4-linux-x86_64.tar.gz.asc
+				curl -O https://artifacts.elastic.co/downloads/beats/auditbeat/auditbeat-8.15.4-x86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/beats/auditbeat/auditbeat-8.15.4-x86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.15.4-linux-x86_64.tar.gz
+				curl -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.15.4-linux-x86_64.tar.gz.sha512
+				curl -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.15.4-linux-x86_64.tar.gz.asc
+				curl -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.15.4-x86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.15.4-x86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.15.4-linux-x86_64.tar.gz
+				curl -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.15.4-linux-x86_64.tar.gz.sha512
+				curl -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.15.4-linux-x86_64.tar.gz.asc
+				curl -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.15.4-x86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.15.4-x86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/beats/heartbeat/heartbeat-8.15.4-linux-x86_64.tar.gz
+				curl -O https://artifacts.elastic.co/downloads/beats/heartbeat/heartbeat-8.15.4-linux-x86_64.tar.gz.sha512
+				curl -O https://artifacts.elastic.co/downloads/beats/heartbeat/heartbeat-8.15.4-linux-x86_64.tar.gz.asc
+				curl -O https://artifacts.elastic.co/downloads/beats/heartbeat/heartbeat-8.15.4-x86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/beats/heartbeat/heartbeat-8.15.4-x86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-8.15.4-linux-x86_64.tar.gz
+				curl -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-8.15.4-linux-x86_64.tar.gz.sha512
+				curl -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-8.15.4-linux-x86_64.tar.gz.asc
+				curl -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-8.15.4-x86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-8.15.4-x86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/beats/osquerybeat/osquerybeat-8.15.4-linux-x86_64.tar.gz
+				curl -O https://artifacts.elastic.co/downloads/beats/osquerybeat/osquerybeat-8.15.4-linux-x86_64.tar.gz.sha512
+				curl -O https://artifacts.elastic.co/downloads/beats/osquerybeat/osquerybeat-8.15.4-linux-x86_64.tar.gz.asc
+				curl -O https://artifacts.elastic.co/downloads/beats/osquerybeat/osquerybeat-8.15.4-x86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/beats/osquerybeat/osquerybeat-8.15.4-x86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-8.15.4-linux-x86_64.tar.gz
+				curl -O https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-8.15.4-linux-x86_64.tar.gz.sha512
+				curl -O https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-8.15.4-linux-x86_64.tar.gz.asc
+				curl -O https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-8.15.4-x86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-8.15.4-x86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/cloudbeat/cloudbeat-8.15.4-linux-x86_64.tar.gz
+				curl -O https://artifacts.elastic.co/downloads/cloudbeat/cloudbeat-8.15.4-linux-x86_64.tar.gz.sha512
+				curl -O https://artifacts.elastic.co/downloads/cloudbeat/cloudbeat-8.15.4-linux-x86_64.tar.gz.asc
+				curl -O https://artifacts.elastic.co/downloads/cloudbeat/cloudbeat-8.15.4-x86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/cloudbeat/cloudbeat-8.15.4-x86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/endpoint-dev/endpoint-security-8.15.4-linux-x86_64.tar.gz
+				curl -O https://artifacts.elastic.co/downloads/endpoint-dev/endpoint-security-8.15.4-linux-x86_64.tar.gz.sha512
+				curl -O https://artifacts.elastic.co/downloads/endpoint-dev/endpoint-security-8.15.4-linux-x86_64.tar.gz.asc
+				curl -O https://artifacts.elastic.co/downloads/endpoint-dev/endpoint-security-8.15.4-x86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/endpoint-dev/endpoint-security-8.15.4-x86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/fleet-server/fleet-server-8.15.4-linux-x86_64.tar.gz
+				curl -O https://artifacts.elastic.co/downloads/fleet-server/fleet-server-8.15.4-linux-x86_64.tar.gz.sha512
+				curl -O https://artifacts.elastic.co/downloads/fleet-server/fleet-server-8.15.4-linux-x86_64.tar.gz.asc
+				curl -O https://artifacts.elastic.co/downloads/fleet-server/fleet-server-8.15.4-86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/fleet-server/fleet-server-8.15.4-86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-host-agent-8.15.4-linux-x86_64.tar.gz
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-host-agent-8.15.4-linux-x86_64.tar.gz.sha512
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-host-agent-8.15.4-linux-x86_64.tar.gz.asc
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-host-agent-8.15.4-86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-host-agent-8.15.4-x86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-elastic-collector-8.15.4-linux-x86_64.tar.gz
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-elastic-collector-8.15.4-linux-x86_64.tar.gz.sha512
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-elastic-collector-8.15.4-linux-x86_64.tar.gz.asc
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-elastic-collector-8.15.4-86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-elastic-collector-8.15.4-x86_64.rpm.sha512
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-elastic-symbolizer-8.15.4-linux-x86_64.tar.gz
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-elastic-symbolizer-8.15.4-linux-x86_64.tar.gz.sha512
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-elastic-symbolizer-8.15.4-linux-x86_64.tar.gz.asc
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-elastic-symbolizer-8.15.4-86_64.rpm
+				curl -O https://artifacts.elastic.co/downloads/prodfiler/pf-elastic-symbolizer-8.15.4-x86_64.rpm.sha512
+
+------------------------------
+2- Other VMs:
+
+		a. Needed sudo commands:
+         dnf , or yum , or rpm , semanage fcontext , semanage port , chcon ,vgs , lvs , pvs , pvdisplay , lvdisplay , vgdisplay ,chmod , chown , cat , sed , awk , grep, vim , setfacl, getfacl , iptables , systemctl , journalctl , firewalld-cmd , rm , cp , mv , podman , podman-compose , pip3 , pip3.9 , pip3.8 , curl ,openssl, df , top , elastic-agent , apm-server , /usr/share/logstash/bin/logstash , jq
+
+
+        b. Add write permission to the user on this file : 
+			/etc/profile
+
+		c. Grant the group/users created on IDM and will access VM 775 permission of /mnt/data
+
+		d. create a service user  called "elastic-agent-user" to run fleet server and do the below:
+    	add the elastic-agent-user user to the adm group
+    	Giving read permission to the elastic-agent group for the /var/log/system.log
+    	Give read permission to the elastic-agent group for the /var/log/system.log
+			
+
